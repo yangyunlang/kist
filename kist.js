@@ -64,5 +64,24 @@ function randomHexColor2(){
     return color.join('');
   }
   
-  console.log(randomHexColor2());
+console.log(randomHexColor2());
+  
+//求数组最大值
+function max(arr) {
+    //创建一个用于存放最大值的变量
+    // 假设法：假设数组第一个数是最大值
+    var max = arr[0];
+
+    //访问到数组里的每个元素
+    for (var i = 0; i < arr.length; i++){
+        //如果最大值居然比后面数据还小，
+        if (max < arr[i]) {
+            //把数据赋值给最大值
+            max = arr[i];
+        }
+    }
+    return max;
+}
+var arr = [11, 22, 33, 55, 88];
+console.log(max(arr));
 
