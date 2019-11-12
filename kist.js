@@ -29,31 +29,40 @@ var kist = function () {
             }
             console.log(randomColor());
             document.body.style.backgroundColor = randomColor();
+
+            /* 渐变 */
+            // var c1 = randomColor();
+            // var c2 = randomColor();
+            // var angle = randomInt(0, 359);
+            // console.log(c1, c2);
+            // /* 设置body的背景图片是渐变就行 */
+            // document.body.style.backgroundImage = 'linear-gradient(' +           angle + 'deg,' + c1 + ',' + c2 + ')';
         }
     }
 }
 
-function sixteen() {
-            //随机生成十六进制颜色
-        //#00ff00;
-        var arr = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-        //获取随机数组的索引值0-16
-        function index(n,m){
-            return Math.floor(Math.random()*(m-n+1) +n);
-        }
-        //color:#006655;
-        function Color(){
-            var y = arr[index(0,15)];
-            var e = arr[index(0,15)];
-            var s = arr[index(0,15)];
-            var x = arr[index(0,15)];
-            var w = arr[index(0,15)];
-            var l = arr[index(0,15)];
-            var color = '#'+y + e + s + x + w +l;
-            return color;
-            console.log(color);
-        }
-        var shiColor = Color();
-        console.log(shiColor);
-        document.body.style.backgroundColor = shiColor;
-}
+//随机生成十六进制颜色
+//方法1
+function randomHexColor1(){
+    var arr = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+    var color = ['#'];
+    for(var i = 0; i < 6; i++){
+      var r = Math.floor(Math.random() * arr.length);
+      color.push(arr[r]);
+    }
+    return color.join('');
+  }
+  console.log(randomHexColor1());
+
+/* 方法2 */
+function randomHexColor2(){
+    var color = ['#'];
+    for(var i = 0; i < 6; i ++){
+      var r = Math.floor(Math.random() * 16).toString(16);
+      color.push(r);
+    }
+    return color.join('');
+  }
+  
+  console.log(randomHexColor2());
+
