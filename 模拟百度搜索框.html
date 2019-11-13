@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-size: 20px;
+        }
+        .box {
+            width: 600px;
+            height: 40px;
+            margin: 200px auto;
+            position: relative;
+        }
+        #txt {
+            width: 498px;
+            height: 38px;
+            border: 1px solid #000;
+            font-size: 20px;
+        }
+        #search {
+            width: 100px;
+            height: 40px;
+        }
+        #keywords {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background-color: rgb(12, 255, 24);
+            list-style: none;
+            width: 500px;;
+        }
+        li {
+            line-height: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div class="top">
+        <input type="text" id="txt"/><input type="button" value="search" id="search"/>
+    </div>
+    <ul id="keywords">
+        <!--<li>1</li>-->
+        <!--<li>2</li>-->
+        <!--<li>3</li>-->
+        <!--<li>4</li>-->
+        <!--<li>5</li>-->
+        <!--<li>6</li>-->
+    </ul>
+</div>
+<script>
+    // 词汇数据库
+    var keyWordsArr = ["斗鱼","小鱼","鲨鱼","咸鱼","花猫","花猫吃鱼","老鼠","老鼠吃猫"];
+
+    /*
+    *  在用户输入完成的时候，在输入框的下面出现一些待选词汇给用户
+    *       输入完成  -- 键盘弹起
+    *       待选词汇
+    *           --  动态生成即可
+    *           --  内容的要求： 跟输入的关键字相关的
+    *               --  相关 ： 百度里面的要求是 以关键字开头
+    *                   -- 我们的处理是： 只要包含关键字即可
+    *                       -- 包含： 有  indexOf
+    *           --  内容的来源
+    *               -- 百度的- 从百度的服务器来的
+    *                   -- 只能自己模拟在服务器中的操作
+    *                   -- 自己的服务器： 一个数组 -- 只要遍历数组，查看每个词跟关键字的关系，如果有关系，把这个词返回给浏览器
+    *
+    *  -- 得到数据之后，就把数据展示在输入框的下面即可
+    *
+    *  百度的流程：
+    *       1 用户在输入框中输入数据
+    *       2 浏览器把数据发送到百度的服务器
+    *       3 百度的服务器，就从自己的数据中，筛选出一部分相关的
+    *       4 百度的服务器把数据返回给浏览器
+    *       5 浏览器把数据展示在下列列表里面
+    *
+    * */
+
+
+    var ul = document.getElementById('keywords');
+
+    // 1 给输入框注册键盘的弹起事件
+    var txt = document.getElementById('txt');
+
+    txt.onkeyup = function(){
+        // 用户输入完毕事件
+        // 2 把用户输入的数据发送到服务器
+        // 2.1 先获取用户输入的数据
+        var val = txt.value;
+        // 2.2 发送 -- 没法发送了
+        // 在这判断一下，是否输入的内容为空字符串，如果是，就不发送了
+        if(val == ""){
+            // 清空ul的子元素 -- removeChild -- 可行的 -- 要从最后一个开始移除
+            ul.innerHTML = '';
+            return;
+        }
+        //3 在服务器上筛选数据
+        // 3.3 准备一个用于管理词汇的数组
+        var temp = [];
+        // 3.1 遍历数组，筛选数据
+        for(var i = 0; i < keyWordsArr.length ; i++){
+            // 3.2 判断每个词跟关键字是否有关系 - indexOf - 判断数组里面每个词是否包含用户输入的数据
+            if(keyWordsArr[i].indexOf(val) != -1){
+                // 词汇包含关键字 -- 把这个词汇返回给浏览器 -- 准备一个数组把返回的词汇，统一管理起来
+                // 3.4 把关联的词汇放到返回的数组里面
+                temp.push(keyWordsArr[i]);
+                // 3.5 返回给浏览器
+            }
+        }
+
+        // 调试bug1的思路 - 出现很多的元素，必然是生成的地方出了问题，生成的时候，是根据temp数组生成，有可能就是temp出了问题 - -检查temp
+        // keyup事件时不好打断点的  -- console.log(temp);
+//        console.log(temp);
+        //
+
+        // 4 得到服务器返回的数据了
+        // 把上一次没还有清空的数据，也要清空一下
+        ul.innerHTML = '';
+
+        // 展示数据给用户看
+        // 动态生成多个li
+        for(var j = 0; j < temp.length ; j++){
+            // 4.1 创建元素
+            var li = document.createElement('li');
+            // 4.2 设置内容
+            li.innerText = temp[j];
+            // 4.3 追加到结构中
+            ul.appendChild(li);
+        }
+
+        // bug1  删掉 会出现一大堆的元素 -- 发现如果当val是空字符串的时候，每个字符串都包含空字符串，导致temp数组非常多，导致li也非常多 -- 特殊情况 -- 如果是空字符串的时候，不发送请求了
+        // bug2  发现每次情况掉关键字之后，原来的数据没有被清空 - 清空
+        // bug3  发现如果不清空，直接在原来的基础上继续输入，原来的数据还是没有被清空  - 清空
+    }
+</script>
+</body>
+</html>
