@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: url("images/bg.gif");
+            font: 12px "simsun";
+        }
+
+        .content {
+            width: 960px;
+            height: 627px;
+            margin: 0 auto;
+            background: url("images/content_bg.jpg");
+        }
+
+        .clearfix {
+            *zoom: 1;
+        }
+
+        .clearfix:before, .clearfix:after {
+            content: '';
+            display: table;
+        }
+
+        .clearfix:after {
+            clear: both;
+        }
+
+        .tip {
+            width: 227px;
+            position: absolute;
+            top: 100px;
+            left: 200px;
+        }
+
+        .tip-h {
+            padding-top: 50px;
+            background: url("images/tip1_h.gif") no-repeat;
+            cursor: default;
+        }
+
+        .text {
+            float: left;
+            padding-left: 10px;
+        }
+
+        .close {
+            float: right;
+            margin-right: 10px;
+        }
+
+        .tip-m {
+            min-height: 40px;
+            padding: 0 10px;
+            padding-top: 10px;
+            background: url("images/tip1_c.gif");
+        }
+
+        .tip-f {
+            height: 53px;
+            background: url("images/tip1_f.gif");
+            padding-top: 20px;
+        }
+
+        .icon {
+            float: left;
+            padding-left: 10px;
+        }
+
+        .name {
+            float: right;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="content" id="content">
+    <div class="tip" id="tip">
+        <div class="tip-h clearfix" title="双击关闭纸条">
+            <div class="text">第[49568]条 2016-02-17 22:51:52</div>
+            <div class="close" title="关闭纸条">x</div>
+        </div>
+        <div class="tip-m">努力学习，高薪就业</div>
+        <div class="tip-f clearfix">
+            <div class="icon">
+                <img src="images/bpic_1.gif" alt=""/>
+            </div>
+            <div class="name">水货</div>
+        </div>
+    </div>
+</div>
+    <script>
+
+        var messages = [
+            {"id": 1, "name": "mahu", "content": "今天你拿苹果支付了么", "time": "2016-02-17 00:00:00"},
+            {"id": 2, "name": "haha", "content": "今天天气不错，风和日丽的", "time": "2016-02-18 12:40:00"},
+            {"id": 3, "name": "jjjj", "content": "常要说的事儿是乐生于苦", "time": "2016-03-18 12:40:00"},
+            {"id": 4, "name": "9.8的妹纸", "content": "把朋友家厕所拉堵了 不敢出去 掏了半小时了都", "time": "2016-03-18 12:40:00"},
+            {"id": 5, "name": "雷锋ii.", "content": "元宵节快乐", "time": "2016-02-22 12:40:00"},
+            {
+                "id": 6,
+                "name": "哎呦哥哥.",
+                "content": "据说今晚央视的元宵晚会导演和春晚导演是同一个人，真是躲得过初一，躲不过十五。",
+                "time": "2016-02-22 01:30:00"
+            },
+            {
+                "id": 7,
+                "name": "没猴哥，不春晚",
+                "content": "班主任:“小明，你都十二岁了，还是三年级，不觉得羞愧吗”？。小明:“一点也不觉得，老师你都四十多岁了，不也是年年在三年级混日子吗？羞愧的应该是你”。老师:……",
+                "time": "2016-02-22 01:30:00"
+            },
+            {"id": 8, "name": "哎呦杰杰.", "content": "真搞不懂你们地球人，月亮有什么好看的，全是坑，还是对面那哥们好看，", "time": "2016-02-22 01:30:00"},
+            {"id": 9, "name": "哎呦哎呦", "content": "今天哪里的烟花最好看！！？答：朋友圈。。。", "time": "2016-02-22 02:30:00"}
+        ];
+
+        /*
+         *  功能：
+         *       1  动态的生成多张纸条
+         *       2  纸条的位置是随机的
+         *       3  点击纸条，别的纸条挡不住
+         *       4  点击关闭
+         *       5  双击关闭
+         * */
+
+        var content = document.getElementById('content');
+
+        // 1 动态生成多个纸条
+        // 结构复杂，考虑使用innerHTML  元素.innerHTML = '标签格式的字符串'
+        var html = '';
+        for (var i = 0; i < messages.length; i++) {
+            var obj = messages[i];
+
+            // 拼接字符串，最后生成结构
+            html += '<div class="tip" id="tip">' +
+                        '<div class="tip-h clearfix" title="双击关闭纸条">' +
+                            '<div class="text">第['+ (49568 + obj.id) +']条 '+ obj.time +'</div>' +
+                            '<div class="close" title="关闭纸条">x</div>' +
+                        '</div>' +
+                        '<div class="tip-m">'+ obj.content +'</div>' +
+                        '<div class="tip-f clearfix">' +
+                            '<div class="icon">' +
+                                '<img src="images/bpic_1.gif" alt=""/>' +
+                            '</div>' +
+                            '<div class="name">'+ obj.name +'</div>' +
+                        '</div>' +
+                    '</div>';
+        }
+        // 设置回父元素里面
+        content.innerHTML = html;
+
+        // 2 随机位置
+//        获取每个纸条，给每个纸条设置随机位置 - 根据class获取元素
+        var tips = content.getElementsByClassName('tip');
+        // 设置随机位置 top 和 left 控制位置
+        for(var j = 0; j < tips.length ; j++){
+            tips[j].style.top = Math.random() * 500 + 'px';
+            tips[j].style.left = Math.random() * 900 + 300 + 'px';
+        }
+        //
+
+
+        var maxIndex = 1;
+        // 3 点击纸条，把该纸条的层级提升到最高
+        for(var k = 0; k < tips.length ; k++){
+            tips[k].onclick = function(){
+                maxIndex++;
+                // 提高层级
+                this.style.zIndex = maxIndex;
+            }
+        }
+
+        // 4 点击关闭
+        var closeBtns = document.getElementsByClassName('close');
+        for(var x = 0; x < closeBtns.length ; x++){
+            closeBtns[x].onclick = function(){
+                // 找到纸条，关闭纸条
+                var tip = this.parentNode.parentNode;
+                // 删除纸条
+                tip.parentNode.removeChild(tip);
+            }
+        }
+        
+        // 5 双击关闭
+        for(var y = 0; y < tips.length ; y++){
+            // dblclcik 双击事件
+            tips[y].ondblclick = function(){
+                // 移除自己
+                this.parentNode.removeChild(this);
+            }
+        }
+
+        /*
+        *  优化：
+        *       注册事件的函数放到循环的外面
+        *       把多个循环整合成一个循环即可
+        *
+        *  加一个功能：
+        *       双击内容可以修改 -- 跟双击关闭可能会有冲突 -
+        *
+        *       给内容注册双击事件
+        *       先把内容保存起来
+        *       生成一个文本域，把内容里面的文字替换掉
+        *       把文本域的内容替换成保存起来的内容
+        *       编辑完成 - 失去焦点
+        *           -- 把文本域里面的内容保存，把文本域移除，替换成刚才编辑的内容
+        *       -- 有能力的同学自己完成
+        *
+        * */
+
+    </script>
+</body>
+</html>
