@@ -82,6 +82,9 @@ function max(arr) {
     }
     return max;
 }
-var arr = [11, 22, 33, 55, 88];
-console.log(max(arr));
+// var arr = [11, 22, 33, 55, 88];
+// console.log(max(arr));
+
+//求1-100之间能被3整除的数
+
 
