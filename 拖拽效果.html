@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -21,7 +22,6 @@
             border: #ebebeb solid 1px;
             height: 280px;
             left: 50%;
-            right: 50%;
             background: #ffffff;
             box-shadow: 0px 0px 20px #ddd;
             z-index: 9999;
@@ -131,74 +131,73 @@
 <div id="bg" class="login-bg" ></div>
 
 </body>
-</html>
-
 <script>
 /*
-  鼠标按着登录框，可以让登录框随着鼠标的移动而移动 - 拖动
+  效果：
+    鼠标按下，然后移动的函数，登录框可以随着鼠标的而移动而移动
+    鼠标松开，登录框就固定不动了
 
-  js里面没有拖动事件
-    需要自己分析，如何才能实现拖动
-      1 鼠标按下
-          告诉浏览器，这个元素可以被拖动了
-      2 鼠标移动
-          如果鼠标是按下的，就让这个元素跟着鼠标一起移动
-      3 鼠标弹起
-          告诉浏览器，这个元素不可以被拖动了
-
+      三个事件
+        - 鼠标按下 - mousedown
+        - 鼠标移动 - mousemove
+        - 鼠标松开 - mouseup
+    鼠标按下
+      告诉登录框，要随着鼠标的移动而移动
+    鼠标移动
+      判断是否按下了，如果按下了，就让登录框跟着鼠标移动
+    鼠标松开
+      告诉登录框，不能随着鼠标移动了
 */
-// 1 注册鼠标的按下事件 - title这个div
-// 2 注册鼠标移动 - title这个div
-// 3 注册鼠标的弹起事件 - title这个div上弹起、
+/*
+  bug1：
+    移动鼠标，往右边和下面移动可以有效果，左和上没有效果 - 鼠标移出了title，不触发移动事件了
+  bug2:
+    鼠标的位置应该要定在title的里面的某个位置，而不是title的左上角
+    如果需要让鼠标离div的左上角有距离，只需要让鼠标的坐标减少一点，在设置给div的top和left即可
+    但是现在我们距离div的左上角是需要动态计算的
+      - 当鼠标按下，所有的东西都是固定不动的，只需要使用按下的鼠标坐标 - div的左上角的位置 - 就可以得到鼠标距离div的左上角哟有多远
+*/
 
-
-// 获取元素-登录框
-var login = document.getElementById('login');
-// 定义一个变量，告诉浏览器，是否可以拖动
-var isDragable = false;// 一开始是不可以拖动的
-var title = document.getElementById('title');
-
-// 声明两个变量，保存点下的瞬间，鼠标距离登录框的左上角的位移
-var tempX;
-var tempY;
-// 注册鼠标的按下事件
+// 获取元素
+let login = document.getElementById('login');
+let title = document.querySelector('#title');
+//写一个变量，标记是否按下了鼠标
+let isDrag = false;
+// 声明两个变量，记录点下的位置距离lgoin的左上角有多远
+let tempX,tempY;
+// 给title注册鼠标按下事件
 title.onmousedown = function(e){
-  // console.log(123);
-  // 告诉浏览器，可以拖动了
-  isDragable = true;
-  // 算出鼠标点下的位置距离登录框的左上角的距离
-  // 用鼠标的位置 - 登录框的左上角的位置
-  tempX = e.pageX - login.offsetLeft;
-  tempY = e.pageY - login.offsetTop;
-  console.log(e.pageX,e.pageY);
-
+  // 标记一下，可以让登录框随着鼠标的移动而移动
+  isDrag = true; // 表示鼠标按下了
+  // 计算点下的位置距离 div 的左上角有多远
+  let mx = e.pageX;
+  let my = e.pageY;
+  // 得到div距离页面的左上角有多远
+  let offsetLeft = login.offsetLeft; // 受到定位和margin的影响
+  let offsetTop = login.offsetTop;
+  // console.log(offsetTop,offsetLeft);
+  // 算出鼠标的位置距离login这个div的左上角有多远
+  tempX = mx - offsetLeft;
+  tempY = my - offsetTop;
 }
-// 注册鼠标的移动事件
-// 后来发现，给title注册鼠标移动，可能会在拖动的瞬间移出指定范围了，就无法触发事件了
-// 希望是在任意位置移动都可以实现拖动，给document注册事件 —— 只要是希望在任何位置都可以触发的，给document注册事件就对了
-// title.onmousemove = function(e){
+
+// 当鼠标松开，表示没有按下
+title.onmouseup = function(){
+  // 松开了就是没按下
+  isDrag = false;
+}
+
+// 让盒子随着鼠标的移动而移动 - 希望鼠标移动在任何位置都可以触发 - 给document注册才是正确的
 document.onmousemove = function(e){
-  // console.log(456);
-  // 让登录框随着鼠标的移动而移动
-  // 只有允许拖动的时候，才可以移动登录框
-  if(isDragable == true){
-    // 获取鼠标的位置    
-    var x = e.pageX;
-    var y = e.pageY;
-    // 设置给登录框的定位
-    // 不是直接的设置 登录框的位置 就是鼠标的位置，而是让登录框，向上和向左移动一点
-    // 需要减去鼠标相对于登录框的左上角的距离
-    login.style.left = x - tempX + 250 + 'px';
-    login.style.top = y - tempY - 140 + 'px';
+  // 判断是否按下
+  if(isDrag){
+    // 还要消除margin带来的影响
+    // offsetLeft = left + maringLeft
+    // left = offsetLeft - marginLeft
+    login.style.top = e.pageY - tempY - 140  + 'px';
+    login.style.left = e.pageX - tempX + 250  + 'px';
   }
 }
-// 注册鼠标松开
-// 如果鼠标移出了浏览器的范围，松开了，此时就无法触发鼠标的松开
-// 也是希望在任何位置都可以松开 - 给document注册
-// title.onmouseup = function(){
-document.onmouseup = function(){
-  // console.log(789);
-  // 告诉浏览器，不能拖动了
-  isDragable = false;
-}
+
 </script>
+</html>

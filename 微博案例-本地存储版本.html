@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>微博发布效果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .weibo {
+            width: 600px;
+            border: 1px solid #ccc;
+
+            margin: 100px auto;
+            padding: 10px;
+
+        }
+
+        .weibo-text {
+            width: 590px;
+            height: 140px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+            resize: none;
+        }
+
+        .weibo-text:focus {
+            border-color: #f60;
+        }
+
+        .weibo-btn {
+            width: 80px;
+            height: 30px;
+            background-color: #f90;
+            color: #fff;
+            border: 0 none;
+            margin-top: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            outline: 0 none;
+        }
+
+        .weibo-list {
+            padding-top: 10px;
+        }
+
+        .weibo-list li {
+            font-size: 14px;
+            line-height: 30px;
+            border-bottom: 1px dotted #ccc;
+            overflow: hidden;
+        }
+
+        .weibo-list li p {
+            float: left;
+        }
+
+        .weibo-list li span {
+            float: right;
+            cursor: pointer;
+        }
+
+        .weibo-list li input {
+            height: 24px;
+            line-height: 24px;
+            width: 300px;
+            font-size: 14px;
+            border: 0 none;
+        }
+        .time {
+            margin-right: 10px;
+            font-style: normal;
+            float: right;
+        }
+    </style>    
+</head>
+
+<body>
+<div class="weibo">
+    <textarea class="weibo-text"></textarea>
+    <input class="weibo-btn" value="发布" type="button">
+    <ul class="weibo-list">
+        <!-- <li>
+            <p class="content">快来收了这九款用上就停不下来的应用吧！！</p>
+            <span class="time"></span>
+            <span class="del">删除</span>
+        </li> -->
+    </ul>
+</div>
+</body>
+</html>
+<script>
+
+// var arr = [
+//     {   
+//         id : (new Date('2019-02-25 08:32:24')).getTime(),
+//         content:'快来收了这九款用上就停不下来的应用吧！！',
+//         time : '2019-02-25 08:32:24'
+//     },
+//     {
+//         id : (new Date('2019-02-12 14:12:04')).getTime(),
+//         content:'超级详细的云南大理自助游攻略',
+//         time : '2019-02-12 14:12:04'
+//     },
+//     {
+//         id : (new Date('2019-02-09 23:14:37')).getTime(),
+//         content:'外国最近很火的舞蹈，舒服简单自然，太棒了！',
+//         time : '2019-02-09 23:14:37'
+//     }
+//     ];
+// localStorage.setItem('mbData',JSON.stringify(arr));
+
+function patchZero(v){
+    return v < 10 ? '0' + v : v;
+}
+
+function formatDate(){
+    var now = new Date();
+    var y = now.getFullYear();
+    var m = now.getMonth();
+    var d = now.getDate();
+    var h = now.getHours();
+    var mm = now.getMinutes();
+    var s = now.getSeconds();
+    return y + '-' + patchZero(m) + '-' + patchZero(d) + ' ' + patchZero(h) + ":" + patchZero(mm) + ':' + patchZero(s);
+}
+
+
+// 获取按钮和文本域和ul
+// var btn = document.getElementsByClassName('weibo-btn');
+var btn = document.querySelector('.weibo-btn');
+var txt = document.querySelector('.weibo-text');
+var list = document.querySelector('.weibo-list');
+
+// 读取localStorage的数据，生成微博列表
+var data = JSON.parse(localStorage.getItem('mbData')) ? JSON.parse(localStorage.getItem('mbData')) : [];
+var html = [];
+data.forEach(function(e){
+    var str = '<li><p class="content">'+ e.content +'</p><span data-id="'+ e.id +'" class="del">删除</span><em class="time">'+ e.time +'</em></li>'
+    html.push(str);
+});
+list.innerHTML = html.join('');
+
+// 注册事件
+btn.onclick = function(){
+  // 获取文本域的内容
+  var text = txt.value;
+  var time = formatDate()
+  var id = Date.now();
+  // 创建一个新的li
+  var li = document.createElement('li');
+  // 把文本域的内容作为li的新的内容
+  li.innerHTML = '<p class="content">'+ text +'</p><span data-id="'+ id +'" class="del">删除</span><em class="time">'+ time +'</em>';
+  // 把创建好的li，添加到结构中
+//   list.appendChild(li);
+// 想要的效果是把新建的元素，放到最前面
+    list.insertBefore(li,list.children[0]);
+  // 把文本域里面的内容清空
+  txt.value= '';
+
+ // 存储数据
+ data.unshift({
+     id: id,
+     content: text,
+     time: time
+ });
+
+ var str = JSON.stringify(data);
+
+ localStorage.setItem('mbData',str);
+}
+
+// 因为删除按钮其实有一部分是动态生成的，最好的方式是使用事件委托的方式实现
+// 1 把事件注册在一个已经存在的前代元素身上 - 把事件注册在ul身上
+list.addEventListener('click',function(e){
+    // 2 当事件被触发的时候，判断一下，事件目标是否是一个指定的元素，如果是，才执行
+    // 我们的要求是委托span的点击事件 ，判断点击的是否是span
+    // console.log(e.target.nodeName);
+    if(e.target.nodeName === 'SPAN'){
+        var id = e.target.dataset.id;
+        // 如果满足条件，就把span对应的li删除
+        var li = e.target.parentNode;
+        list.removeChild(li);
+
+       data.forEach(function(e,i){
+           if(e.id == id){
+               data.splice(i,1);
+           }
+       }); 
+
+       var str = JSON.stringify(data);
+       localStorage.setItem('mbData',str);
+
+    }
+});
+
+// 事件按键发布
+// 给文本域注册了键盘事件
+txt.onkeydown = function(e){
+    // 判断是否同时按下了ctrl以及回车
+    // console.log(e);
+    // 如果按下了ctrl，事件对象的一个属性    事件对象.ctrlKey  就是true
+    if(e.ctrlKey && e.keyCode === 13){
+        // 此时就要发布微博
+        btn.onclick();// 直接使用代码触发点击事件
+    }
+}
+
+</script>

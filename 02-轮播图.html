@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .box {
+            width: 730px;
+            height: 454px;
+            padding: 8px;
+            border: 1px solid green;
+            margin: 100px auto;
+        }
+
+        .inner {
+            position: relative;
+            overflow: hidden;
+            height: 454px;
+        }
+
+        #imglist {
+            width: 700%;
+            position: absolute;
+            left: 0;
+            transition: left 300ms linear;
+        }
+
+        li {
+            float: left;
+        }
+
+        .list {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            margin-left: -85px;
+        }
+
+        .list i {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #fff;
+            color: #333;
+            float: left;
+            font-style: normal;
+            line-height: 20px;
+            font-size: 14px;
+            text-align: center;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .list i:last-child {
+            margin-right: 0;
+        }
+
+        .list i.current {
+            background-color: skyblue;
+            color: #fff;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            margin-top: -30px;
+        }
+
+        .arrow-left,
+        .arrow-right {
+            width: 30px;
+            height: 60px;
+            position: absolute;
+            font: 20px/60px "consolas";
+            color: #fff;
+            background-color: rgba(0, 0, 0, .3);
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .arrow-right {
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box" id="box">
+        <div class="inner" id="inner">
+            <ul id="imglist">
+                <li><a href="#"><img src="images/1.jpg" alt=""></a></li>
+                <li><a href="#"><img src="images/2.jpg" alt=""></a></li>
+                <li><a href="#"><img src="images/3.jpg" alt=""></a></li>
+                <li><a href="#"><img src="images/4.jpg" alt=""></a></li>
+                <li><a href="#"><img src="images/5.jpg" alt=""></a></li>
+                <li><a href="#"><img src="images/6.jpg" alt=""></a></li>
+            </ul>
+            <div class="list">
+                <i class="current">1</i>
+                <i>2</i>
+                <i>3</i>
+                <i>4</i>
+                <i>5</i>
+                <i>6</i>
+            </div>
+            <div class="arrow">
+                <span class="arrow-left">&lt;</span>
+                <span class="arrow-right">&gt;</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    /* 
+      效果： 
+        2.左右按钮的点击切换
+    
+        最终也是希望ul可以被设置left属性，实现左右移动效果
+        left属性 = 图片张数 * 图片宽度 * -1
+    
+        2.1 获取元素
+        2.2 注册点击事件
+        2.3 让ul的left改变
+                ul的left = 图片张数 * 图片宽度 * -1
+                设置ul的left就行
+    */
+    // 获取元素
+    let circles = document.querySelectorAll('.list > i');
+    let ul = document.querySelector('#imglist');
+    let leftBtn = document.querySelector('.arrow-left');
+    let rightBtn = document.querySelector('.arrow-right');
+    let imgWidth = document.querySelector('.inner').offsetWidth;
+    // 定义一个变量，表示当前是第几张图片
+    let currentImgIndex = 0;
+
+    // 把鼠标移入的功能代码放过来
+    // 注册事件
+    for (let i = 0; i < circles.length; i++) {
+        // 鼠标悬停在某个元素的上面的事件 - mouseover
+        circles[i].onmouseover = function () {
+            // 把自动轮播的图片索引和当前移入的原点的索引同步
+            currentImgIndex = i;
+            //ul的left = 序号 * 图片宽度 * -1;
+            let target = i * imgWidth * -1;
+            // 设置ul的left属性，让它以过度动画的形式动起来
+            ul.style.left = target + 'px';
+            // 处理每隔原点的样式
+            // 排他思想 - 先把所有的变普通，再把某些变特殊
+            // 先把所有的 圆点 的 class 都 把  current 移除
+            for(let j = 0; j < circles.length; j++){
+                circles[j].classList.remove('current');
+            }
+            // 当前的原点和别人不一样是因为它有一个  class 叫 current
+            // 只要鼠标移入的元素，也加上这个class就行了
+            // console.log(this);// 事件处理程序里面的this 就是 事件源
+            this.classList.add('current');
+        }
+    }
+
+    // 注册点击事件
+    // 先做右边的点击，因为右边有图片可以切换
+    rightBtn.onclick = rightClickHandle;
+    // 把右边点击的函数封装出来
+    function rightClickHandle() {
+        // 当点击右边按钮的时候，如果当前已经是最后一张
+        if (currentImgIndex === ul.children.length - 1) {
+            // 把图片切换到第0张
+            currentImgIndex = 0;
+            ul.style.left = 0;
+        } else {
+            // 要实现的效果是 让图片 从 n 到 n+1 张
+            // 图片从n 到 n+1
+            currentImgIndex++;
+            // 算出ul的left是多少 = 图片的索引 * 图片宽度 * -1
+            let target = currentImgIndex * imgWidth * -1;
+            // 设置ul的left属性
+            ul.style.left = target + 'px';
+        }
+        // 继续处理小圆点的样式
+        // 根据当前是第几张图片，修改圆点的样式了
+        // 排他
+        for (let j = 0; j < circles.length; j++) {
+            circles[j].classList.remove('current');
+        }
+        // 再把特殊的变成蓝色 - 根据图片的索引，找到对应的原点，控制样式
+        circles[currentImgIndex].classList.add('current');
+    }
+
+    // 左边的点击
+    leftBtn.onclick = function () {
+        // 如果当前是第一张点击了左边的按钮，应该切换到最后一张
+        if (currentImgIndex === 0) {
+            currentImgIndex = ul.children.length - 1;
+            // 把ul变成最后一张
+            ul.style.left = currentImgIndex * imgWidth * -1 + 'px';
+        } else {
+            // 让图片从n到n-1
+            currentImgIndex--;
+            // 算出ul应该在的位置
+            let target = currentImgIndex * imgWidth * -1;
+            // 设置ul的位置
+            ul.style.left = target + 'px';
+        }
+        for (let j = 0; j < circles.length; j++) {
+            circles[j].classList.remove('current');
+        }
+        circles[currentImgIndex].classList.add('current');
+    }
+
+    // 实现自动轮播
+    // 自动轮播相对于是每隔一段时间，点击一下右边按钮
+    let intervalId = setInterval(function () {
+        // 模拟右按钮点击
+        // rightBtn.onclick();
+        // 但是更加推荐我们把右边按钮的逻辑封装成函数，直接调用
+        // 因为注册事件不仅仅是on的方式，如果不是，我们要实现，就不好实现了
+        rightClickHandle();
+    }, 1500);
+
+    // 更加建议给最外层的元素，注册鼠标的移入和移出事件
+    let box = document.querySelector('.box');
+    /* 如果鼠标悬停在图片上面，停止自动轮播 */
+    // 推荐不给图片注册，而是给一个单个的，和图片一样大的前代元素注册 - 减少注册的次数
+    box.onmouseover = function () {
+        // 停止自动轮播
+        clearInterval(intervalId);
+    }
+    // 鼠标移出，继续自动轮播
+    // mouseout - 鼠标移出某个元素的范围之外触发的事件
+    box.onmouseout = function () {
+        // 继续自动轮播
+        intervalId = setInterval(function () {
+            rightClickHandle();
+        }, 1500);
+    }
+</script>
+
+</html>

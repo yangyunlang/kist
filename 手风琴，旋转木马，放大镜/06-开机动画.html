@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    .box {
+      width: 322px;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    span {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 30px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .bd {
+      height: 105px;
+      transition: all 600ms;
+    }
+
+    .box {
+      transition: all 600ms;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box" id="box">
+    <span id="closeButton"></span>
+    <div class="hd" id="headPart">
+      <img src="images/t.jpg" alt="" />
+    </div>
+    <div class="bd" id="bottomPart">
+      <img src="images/b.jpg" alt="" />
+    </div>
+  </div>
+</body>
+<script>
+/* 
+  整个盒子是固定定位，定位的基准是右下角
+    点击关闭的时候，会先把底部的高度逐渐的变为0
+    之后整个盒子的宽度逐渐变为0
+    也是使用过渡动画实现的
+
+  步骤：
+    1.获取元素，注册点击事件
+    2.点击的时候把底部的部分高度设置为0，过渡动画就会让底部的高度，逐渐消失
+*/
+// 获取元素
+let closeButton = document.querySelector('#closeButton');
+let bottomPart = document.querySelector('#bottomPart');
+let box = document.querySelector('#box');
+// 注册点击事件
+closeButton.onclick = function(){
+  //把底部的高度设置为0
+  bottomPart.style.height = 0;
+}
+
+/* 希望在动画结束之后，再实现某些效果 */
+/* c3的过渡动画结束之后，会有一个事件被触发 —— 动画结束事件
+
+  transitionend - 会在元素的过渡动画结束之后触发
+
+  注意点： 动画结束事件不能使用on的方式注册
+    因为 动画结束事件是  html5 里面新增的事件 
+    on 的方式注册  实际上是一个属性 这个属性如果一开始不支持，即使注册了，也是没有效果
+
+    其实很多h5里面的事件，都是推荐使用addEventListener注册的
+*/
+// bottomPart.ontransitionend = function(){
+//   console.log(123);
+// }
+
+// console.log(bottomPart.onclick); // onclick 是js里面一开始就存在的一个属性，这个属性是专门为了实现点击事件而预留的
+// console.log(bottomPart.ontransitionend); // 因为过渡是h5c3才有的，后来html5里面，没有给元素新增 ontransitionend 这个属性，因为文档里面推荐 使用addEventListener 注册， 就没有再把 ontransitionend 这个属性实现
+
+bottomPart.addEventListener('transitionend',function(){
+  // console.log(123);
+  // 把整个盒子的宽度设置为0
+  box.style.width = 0;
+})
+
+</script>
+</html>
